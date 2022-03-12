@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'dart:developer' as devtools show log;
 
 import 'package:moodnotes/constants/routes.dart';
+import 'package:moodnotes/utilities/show_error_dialog.dart';
 
 class LoginView extends StatefulWidget {
   const LoginView({Key? key}) : super(key: key);
@@ -14,7 +15,6 @@ class LoginView extends StatefulWidget {
 class _LoginViewState extends State<LoginView> {
   late final TextEditingController _email;
   late final TextEditingController _password;
-  var errorMsg = "";
 
   @override
   void initState() {
@@ -75,16 +75,20 @@ class _LoginViewState extends State<LoginView> {
                 );
               } on FirebaseAuthException catch (e) {
                 if (e.code == 'user-not-found') {
-                  errorMsg = 'No user found for that email.';
-                  devtools.log('No user found for that email.');
+                  await showErrorDialog(
+                    context,
+                    'Wrong credentials',
+                  );
                 } else if (e.code == 'wrong-password') {
-                  devtools.log('Wrong password provided for that user.');
-                } else if (e.code == 'invalid-email') {
-                  devtools.log('Email is invalid.');
+                  await showErrorDialog(
+                    context,
+                    'Wrong credentials',
+                  );
+                } else {
+                  await showErrorDialog(context, 'Error: ${e.code}');
                 }
               } catch (e) {
-                errorMsg = e.toString();
-                devtools.log(e.toString());
+                await showErrorDialog(context, 'Error: ${e.toString()}');
               }
             },
           ),
@@ -93,7 +97,7 @@ class _LoginViewState extends State<LoginView> {
               Navigator.of(context)
                   .pushNamedAndRemoveUntil(registerRoute, (route) => false);
             },
-            child: const Text('No registered yet? Register here!'),
+            child: const Text('Not registered yet? Register here!'),
           ),
         ],
       ),
