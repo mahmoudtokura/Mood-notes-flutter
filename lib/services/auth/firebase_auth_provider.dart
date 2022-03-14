@@ -1,9 +1,19 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:moodnotes/services/auth/auth_provider.dart';
 import 'package:moodnotes/services/auth/auth_user.dart';
 import 'package:moodnotes/services/auth/auth_exceptions.dart';
 
+import '../../firebase_options.dart';
+
 class FirebaseAuthProvider extends AuthProvider {
+  @override
+  Future<void> initialize() async {
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
+  }
+
   @override
   Future<AuthUser> createUser({
     required String email,
